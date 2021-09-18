@@ -1,6 +1,5 @@
-#include<stdio.h>
-
+#include "simulator.h"
 int main(){
-    printf("Hello World");
-    return 0;
+    printf("Hello world");
+    //simulator(1,);
 }
