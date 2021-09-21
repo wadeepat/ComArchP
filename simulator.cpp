@@ -18,7 +18,8 @@ typedef struct stateStruct {
 void printState(stateType *);
 int convertNum(int);
 char* dectoBi(int);
-void rType(stateType *,char*);
+int bitoDec16bit(char*);
+
 
 int main(int argc, char *argv[])
 {
@@ -53,24 +54,37 @@ int main(int argc, char *argv[])
         printf("memory[%d]=%d\n", state.numMemory, state.mem[state.numMemory]);
     }
     bool running= true;
-    
-    // while(running){
-    //     char *instruc = dectoBi(state.mem[state.pc]);
-    //     cout<<instruc<<endl;
-    //     //printf("instruc= %c",instruc);
-    //     printf("testtttt\n");
-    //     if(instruc[24]=='0' && instruc[23]=='0'){
-    //         //r
-    //         rType(&state,instruc);
-    //     }else if(instruc[24]=='1'&& instruc[23]=='0' && instruc[22]=='1'){
-    //         //j
-    //     }else if(instruc[24]=='1'&& instruc[23]=='1'){
-    //         //o
-    //     }else{
-    //         //i
-    //     }
-    //     break;
+
+   
+
+     char *bi;
+     bi[0]='1';
+     cout<<"start bi";
+     int num = bitoDec16bit(bi);
+     cout<<num;
+    // for(int i=31;i>=0;i--){
+    //     cout<<bi[i];
     // }
+    //cout<<bi[31]<<endl;
+    while(running){
+        char *instruc = dectoBi(state.mem[state.pc]);
+        cout<<instruc<<endl;
+        //printf("instruc= %c",instruc);
+        printf("test %c %c \n",instruc[24],instruc[23]);
+        if(instruc[24]=='0' && instruc[23]=='0'){
+            //r
+           // rType(&state,instruc);
+           cout<<"in r";
+        }else if(instruc[24]=='1'&& instruc[23]=='0' && instruc[22]=='1'){
+            //j
+        }else if(instruc[24]=='1'&& instruc[23]=='1'){
+            //o
+        }else{
+            //i
+            cout<<"in i";
+        }
+        break;
+    }
     
     printState(&state);
 
@@ -104,22 +118,10 @@ int convertNum(int num){
     }
     return(num);
 }
-// int* dectoBi(int dec){
-//     int temp[32]; 
-//     int i=0;
-//     int i=0;
-//     while(i!=32){
-//         if(dec!=0) {
-//             temp[i]=dec%2; 
-//             dec= dec/2;   
-//         }else temp[i]=0;
-//         i++;  
-//     }   
-//     return temp;
-// }
 
 char* dectoBi(int dec){
-    char temp[32]; 
+    //cout<<dec<<endl;
+    char *temp; 
     int i=0;
     while(i!=32){
         if(dec!=0) {
@@ -127,8 +129,10 @@ char* dectoBi(int dec){
             else temp[i]='1'; 
             dec= dec/2;   
         }else temp[i]='0';
+        //cout<<temp[i]<<endl;
         i++;  
-    }   
+    }  
+    cout<<""; //for what
     return temp;
 }
 
@@ -145,17 +149,19 @@ int bitoDec16bit(char* bi){
     for(int i=0;i<16;i++){
         if(bi[i]='1')ans+= pow(2,i);
     }
+    cout<<"ok";
     return ans;
 }
+
 void rType(stateType *statePtr,char* instruc){
     
-    int rd = bitoDec3bit(instruc[2],instruc[1],instruc[0]);
+    //int rd = bitoDec3bit(instruc[2],instruc[1],instruc[0]);
 
     if(instruc[22]=='0'){//add
-        int regA = bitoDec3bit(instruc[21],instruc[20],instruc[19]);
-        int regB = bitoDec3bit(instruc[18],instruc[17],instruc[16]);
-        statePtr->reg[rd] = statePtr->reg[regA]+statePtr->reg[regB];
-        statePtr->pc++;
+        // int regA = bitoDec3bit(instruc[21],instruc[20],instruc[19]);
+        // int regB = bitoDec3bit(instruc[18],instruc[17],instruc[16]);
+        // statePtr->reg[rd] = statePtr->reg[regA]+statePtr->reg[regB];
+        // statePtr->pc++;
     }else{//nand
         char a,b,c;
         if(instruc[21]&&instruc[18])a='0';
@@ -180,32 +186,11 @@ void oType(stateType *statePtr,char* instruc){
    
 }
 
-// if(instruc[24]='0'){
-//             if(instruc[23]='0'){
-//                 if(instruc[22]='0'){//000
 
-//                 }else{//001
 
-//                 }
-//             }else{//01_
-//                 if(instruc[22]='0'){//010
 
-//                 }else{//011
 
-//                 }
-//             }
-//         }else{//1__
-//             if(instruc[23]='0'){
-//                 if(instruc[22]='0'){//100
 
-//                 }else{//101
 
-//                 }
-//             }else{//11_
-//                 if(instruc[22]='0'){//110
 
-//                 }else{//111
 
-//                 }
-//             }
-//         }
