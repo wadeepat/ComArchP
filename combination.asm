@@ -5,7 +5,6 @@ main :
     lw 0 3 0                ; reg3 = 0
     lw 0 6 nCrAdd
     jalr 6 4                ; go to reg6 , reg4 = pc+1 
-    noop 
     halt
 
 stack : 
@@ -26,7 +25,6 @@ stack :
         sw 7 2 stack        ; push r to stack
         add 7 5 7
         jalr nCrAdd 4       ; go to nCr , reg4 = pc+1 
-        noop
         lw 0 6 neg1         ; reg6 = -1
         add 7 6 7           ; up stack aka pop 
         lw 7 2 stack        ; pop
@@ -45,7 +43,6 @@ stack :
         sw 7 2 stack        ; push r to stack
         add 7 5 7
         jalr nCrAdd 4       ; go to nCr , reg4 = pc+1 
-        noop
         lw 0 6 neg1         ; reg6 = -1
         add 7 6 7           ; up
         lw 7 2 stack        ; pop
@@ -53,21 +50,21 @@ stack :
         lw 7 1 stack
         add 7 6 7
         lw 7 4 stack
-        jalr 4 4
+        jalr 4 6
 
 
     ans1 : 
         add 3 pos1 3        ; reg3 = 1
-        jalr 4 4            ; back to main, reg4 is return address
+        jalr 4 6            ; back to main, reg4 is return address
     
     ans2 : 
         add 3 1 3           ; reg3 = n
-        jalr 4 4
+        jalr 4 6
 
     ans3 :
         add 1 pos1 1        ; n++ for go back to original of n 
         add 3 1 3           ; reg3 = n
-        jalr 4 4
+        jalr 4 6
     
 ;data
 pos1 .fill 1
