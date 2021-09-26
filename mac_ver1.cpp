@@ -26,7 +26,7 @@ void binTodec(char *);
 int address;
 string bin{};
 queue<string> symAdd;
-
+char arr[10][10];
 
 
 int main(int argc, char *argv[])
@@ -60,50 +60,40 @@ int main(int argc, char *argv[])
     /* here is an example for how to use readAndParse to read a line from
         inFilePtr */
     int dec;
+    char line[MAXLINELENGTH];
     while(readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2) ) {
         /* reached end of file */
-        bin = '\0';
-        dec = 0;
-        if(!strcmp(opcode, "add")||!strcmp(opcode, "nand")) rtype(label, opcode, arg0, arg1, arg2); //add and nand
-        else if(!strcmp(opcode, "lw")||!strcmp(opcode, "sw")||!strcmp(opcode, "beq")) itype(label, opcode, arg0, arg1, arg2); //lw, sw and beq
-        else if(!strcmp(opcode, "jalr")) jtype(label, opcode, arg0, arg1, arg2);
-        else if(!strcmp(opcode, "halt")||!strcmp(opcode, "noop")) otype(label, opcode, arg0, arg1, arg2);
-        else;
-        cout << bin << "\n";
-        if(bin.size() == 26){
-            int size = bin.size();
-                for(int j=0; j < size; j++){
-                    if(bin.back() == '1')dec += pow(2,j);
-                    bin.pop_back();
-                }
-            // cout << bin << "\n";
-            cout << dec << "\n";
-        }
-        
-        
-        address ++;
+        // bin = '\0';
+        // dec = 0;
+        // if(!strcmp(opcode, "add")||!strcmp(opcode, "nand")) rtype(label, opcode, arg0, arg1, arg2); //add and nand
+        // else if(!strcmp(opcode, "lw")||!strcmp(opcode, "sw")||!strcmp(opcode, "beq")) itype(label, opcode, arg0, arg1, arg2); //lw, sw and beq
+        // else if(!strcmp(opcode, "jalr")) jtype(label, opcode, arg0, arg1, arg2);
+        // else if(!strcmp(opcode, "halt")||!strcmp(opcode, "noop")) otype(label, opcode, arg0, arg1, arg2);
+        // else;
+        // cout << bin << "\n";
+        // if(bin.size() == 26){
+        //     int size = bin.size();
+        //         for(int j=0; j < size; j++){
+        //             if(bin.back() == '1')dec += pow(2,j);
+        //             bin.pop_back();
+        //         }
+        //     // cout << bin << "\n";
+        //     cout << dec << "\n";
+        // }
 
+        address ++;
     }   
-    
-    // for(int i=0; i < address; i++){
-    //     int dec = 0;
-    //     bin = qbin.front();
-    //     qbin.pop();
-    //     for(int j=0; j < 25; j++){
-    //         if(bin.back() == '1')dec += pow(2,j);
-    //         bin.pop_back();
-    //     }
-    //     cout << dec << "\n";
-    // }
     /* this is how to rewind the file ptr so that you start reading from the
         beginning of the file */
     rewind(inFilePtr);
 
+    
+    
     /* after doing a readAndParse, you may want to do the following to test the
-//        opcode */
-//    if (!strcmp(opcode, "add")) {
-//        /* do whatever you need to do for opcode "add" */
-//    }
+        opcode */
+   if (!strcmp(opcode, "add")){
+       rtype(label, opcode, arg0, arg1, arg2);
+   }
 
     return(0);
 }
@@ -132,7 +122,8 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
 	/* reached end of file */
         return(0);
     }
-    cout <<line<< "\n";
+
+    
     /* check for line too long (by looking for a \n) */
     if (strchr(line, '\n') == NULL) {
         /* line too long */
@@ -149,9 +140,13 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
         //check instruction and type *******ยังไม่ได้เช็คว่าเกิน6ไหม******** 
         if(!strcmp(label, "add")||!strcmp(label, "nand")); else if(!strcmp(label, "lw")||!strcmp(label, "sw")||!strcmp(label, "beq"));
         else if(!strcmp(label, "jalr")); else if(!strcmp(label, "halt")||!strcmp(label, "noop"));
-        else if(!strcmp(label, ".fill"));
+        else if(!strcmp(label, ".fill")){
+            printf("error: can't use .fill in label\n");
+	        exit(1);
+        }
         else ptr += strlen(label);
     }
+    
     
 
     /*
