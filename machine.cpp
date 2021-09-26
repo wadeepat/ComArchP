@@ -3,7 +3,6 @@
 #include <string.h>
 #include <iostream>
 #include <string>
-#include <fstream>
 #include <vector>
 
 using namespace std;
@@ -13,6 +12,8 @@ using namespace std;
 int readAndParse(FILE *, char *, char *, char *, char *, char *);
 int isNumber(char *);
 
+char type;
+
 int main(int argc, char *argv[])
 {   
 
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
     FILE *inFilePtr, *outFilePtr;
     char label[MAXLINELENGTH], opcode[MAXLINELENGTH], arg0[MAXLINELENGTH],
             arg1[MAXLINELENGTH], arg2[MAXLINELENGTH];
-    //printf("%d test\n",argv[0]);
+
     if (argc != 3) {
         printf("error: usage: %s <assembly-code-file> <machine-code-file>\n",
             argv[0]);
@@ -41,13 +42,14 @@ int main(int argc, char *argv[])
         printf("error in opening %s\n", outFileString);
         exit(1);
     }
-
+    
     /* here is an example for how to use readAndParse to read a line from
         inFilePtr */
     if (! readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2) ) {
         /* reached end of file */
+        
     }
-
+    cout << type << "\n";
     /* this is how to rewind the file ptr so that you start reading from the
         beginning of the file */
     rewind(inFilePtr);
@@ -79,13 +81,14 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
 
     /* delete prior values */
     label[0] = opcode[0] = arg0[0] = arg1[0] = arg2[0] = '\0';
+    type = 'n';
 
     /* read the line from the assembly-language file */
-    if (fgets(line, MAXLINELENGTH, inFilePtr) == NULL) {
+    if (fgets(line, MAXLINELENGTH, inFilePtr) == NULL) {// get 1 line
 	/* reached end of file */
         return(0);
     }
-
+    
     /* check for line too long (by looking for a \n) */
     if (strchr(line, '\n') == NULL) {
         /* line too long */
@@ -94,19 +97,30 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
     }
 
     /* is there a label? */
+    
     ptr = line;
+    
     if (sscanf(ptr, "%[^\t\n ]", label)) {
 	/* successfully read label; advance pointer over the label */
-        ptr += strlen(label);
+        //check instruction and type ***** ยังไม่ได้เช็คว่าเกิน6ไหม******** 
+        if(!strcmp(label, "add")||!strcmp(label, "nand"))type = 'r';
+        else if(!strcmp(label, "lw")||!strcmp(label, "sw")||!strcmp(label, "beq")) type = 'i';
+        else if(!strcmp(label, "jalr")) type = 'j';
+        else if(!strcmp(label, "halt")||!strcmp(label, "noop"))type = 'o';
+        else ptr += strlen(label);
     }
+    cout << ptr << "\n";
 
     /*
      * Parse the rest of the line.  Would be nice to have real regular
      * expressions, but scanf will suffice.
      */
-    sscanf(ptr, "%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]",
-        opcode, arg0, arg1, arg2);
-    return(1);
+    //sscanf(ptr, "%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]",
+    //    opcode, arg0, arg1, arg2);
+    sscanf(ptr, "%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]",   opcode, arg0, arg1, arg2);
+        cout << opcode << arg0 << arg1 << arg2 << "\n";
+
+        return(1);
 }
 
 int isNumber(char *string)
