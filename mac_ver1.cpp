@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
             if(bin.back() == '1') dec += pow(2,j);
             bin.pop_back();
         }
-        cout << "(address "<< loop << "): " << dec << "\t(binary: " << bi << ")\n";
+        cout << "(address "<< loop << "): " << dec << "\t\t(binary: " << bi << ")\n";
         fprintf(outFilePtr, "%d", dec);
         fputs ("\n",outFilePtr);
         loop++;
