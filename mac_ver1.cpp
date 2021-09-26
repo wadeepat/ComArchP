@@ -6,6 +6,7 @@
 #include <vector>
 #include <queue>
 #include <math.h>
+#include <fstream>
 
 using namespace std;
 
@@ -19,14 +20,11 @@ void itype(char *, char *, char *, char *, char *);
 void jtype(char *, char *, char *, char *, char *);
 void otype(char *, char *, char *, char *, char *);
 
-void tranbin(char *);
-void twoCom(char *);
-void binTodec(char *);
+void tranbin(char *, char *);
+void twoCom(char *, char *);
+void binTodec(char *, char *);
 
-int address;
-string bin{};
-queue<string> symAdd;
-char arr[10][10];
+int addr; string bin; string lb[1000][6]; 
 
 
 int main(int argc, char *argv[])
@@ -43,8 +41,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    inFileString = argv[1];
-    outFileString = argv[2];
+    inFileString = argv[1]; outFileString = argv[2];
 
     inFilePtr = fopen(inFileString, "r");
     if (inFilePtr == NULL) {
@@ -55,46 +52,60 @@ int main(int argc, char *argv[])
     if (outFilePtr == NULL) {
         printf("error in opening %s\n", outFileString);
         exit(1);
-    }
-    
-    /* here is an example for how to use readAndParse to read a line from
-        inFilePtr */
-    int dec;
-    char line[MAXLINELENGTH];
-    while(readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2) ) {
-        /* reached end of file */
-        // bin = '\0';
-        // dec = 0;
-        // if(!strcmp(opcode, "add")||!strcmp(opcode, "nand")) rtype(label, opcode, arg0, arg1, arg2); //add and nand
-        // else if(!strcmp(opcode, "lw")||!strcmp(opcode, "sw")||!strcmp(opcode, "beq")) itype(label, opcode, arg0, arg1, arg2); //lw, sw and beq
-        // else if(!strcmp(opcode, "jalr")) jtype(label, opcode, arg0, arg1, arg2);
-        // else if(!strcmp(opcode, "halt")||!strcmp(opcode, "noop")) otype(label, opcode, arg0, arg1, arg2);
-        // else;
-        // cout << bin << "\n";
-        // if(bin.size() == 26){
-        //     int size = bin.size();
-        //         for(int j=0; j < size; j++){
-        //             if(bin.back() == '1')dec += pow(2,j);
-        //             bin.pop_back();
-        //         }
-        //     // cout << bin << "\n";
-        //     cout << dec << "\n";
-        // }
+    }  
 
-        address ++;
-    }   
+    
+    
+    string text;
+    while(readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2) ) {
+        text = label;
+        lb[addr][0] = text;
+        addr ++;
+    }
+
     /* this is how to rewind the file ptr so that you start reading from the
         beginning of the file */
     rewind(inFilePtr);
-
-    
     
     /* after doing a readAndParse, you may want to do the following to test the
         opcode */
-   if (!strcmp(opcode, "add")){
-       rtype(label, opcode, arg0, arg1, arg2);
-   }
+    int loop=0; int dec;
+    while(readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2)){
+        bin = '\0';
+        dec = 0;
+        if(!strcmp(opcode, "add")||!strcmp(opcode, "nand")) rtype(label, opcode, arg0, arg1, arg2); //add and nand
+        else if(!strcmp(opcode, "lw")||!strcmp(opcode, "sw")||!strcmp(opcode, "beq")) itype(label, opcode, arg0, arg1, arg2); //lw, sw and beq
+        else if(!strcmp(opcode, "jalr")) jtype(label, opcode, arg0, arg1, arg2);
+        else if(!strcmp(opcode, "halt")||!strcmp(opcode, "noop"))otype(label, opcode, arg0, arg1, arg2);
+        else if(!strcmp(opcode, ".fill")){
+            if(isNumber(arg0)) twoCom(opcode,arg0);
+            else{
+                for(int i=0; i<addr; i++){
+                    if(lb[i][0] == arg0){
+                        sprintf(arg0, "%d", i);
+                        twoCom(opcode,arg0);
+                    }else;
+                }
+            }
+        }
 
+        int size = bin.size();
+        string bi = bin;
+        for(int j=0; j < size; j++){
+            if(bin.back() == '1') dec += pow(2,j);
+            bin.pop_back();
+        }
+        cout << "(address "<< loop << "): " << dec << "\t(binary: " << bi << ")\n";
+        loop++;
+    }
+    
+    //int d = 10;
+    //fprintf(outFilePtr, "%d", d);
+
+    // const char *c = bin.c_str();
+    //fputs (c,outFilePtr);
+    //fputs ("\n",outFilePtr);
+    fclose (outFilePtr);
     return(0);
 }
 /*
@@ -118,11 +129,7 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
     label[0] = opcode[0] = arg0[0] = arg1[0] = arg2[0] = '\0';
     
     /* read the line from the assembly-language file */
-    if (fgets(line, MAXLINELENGTH, inFilePtr) == NULL) {// get 1 line
-	/* reached end of file */
-        return(0);
-    }
-
+    if (fgets(line, MAXLINELENGTH, inFilePtr) == NULL)return(0);
     
     /* check for line too long (by looking for a \n) */
     if (strchr(line, '\n') == NULL) {
@@ -138,25 +145,25 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
     if (sscanf(ptr, "%[^\t\n ]", label)) {
 	/* successfully read label; advance pointer over the label */
         //check instruction and type *******ยังไม่ได้เช็คว่าเกิน6ไหม******** 
-        if(!strcmp(label, "add")||!strcmp(label, "nand")); else if(!strcmp(label, "lw")||!strcmp(label, "sw")||!strcmp(label, "beq"));
-        else if(!strcmp(label, "jalr")); else if(!strcmp(label, "halt")||!strcmp(label, "noop"));
+        if(!strcmp(label, "add")||!strcmp(label, "nand")); else if(!strcmp(label, "lw")||!strcmp(label, "sw")||!strcmp(label, "beq"))label[0] = '\0';
+        else if(!strcmp(label, "jalr")); else if(!strcmp(label, "halt")||!strcmp(label, "noop"))label[0] = '\0';
         else if(!strcmp(label, ".fill")){
             printf("error: can't use .fill in label\n");
 	        exit(1);
         }
-        else ptr += strlen(label);
+        else {ptr += strlen(label);
+        sscanf(ptr, "%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]",
+        opcode, arg0, arg1, arg2);
+        return(1);
+        }
     }
-    
-    
-
     /*
      * Parse the rest of the line.  Would be nice to have real regular
      * expressions, but scanf will suffice.
      */
-    //sscanf(ptr, "%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]",
-    //    opcode, arg0, arg1, arg2);
     sscanf(ptr, "%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]",   opcode, arg0, arg1, arg2);
     return(1);
+    
 }
 
 int isNumber(char *string)
@@ -167,35 +174,48 @@ int isNumber(char *string)
 }
 
 void rtype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
-
+    bin += "0000000";
     if(!strcmp(opcode, "add")) bin += "000";
     else bin += "001";
-    tranbin(arg0);
-    tranbin(arg1);
+    tranbin(opcode,arg0);
+    tranbin(opcode,arg1);
     bin += "0000000000000";
-    tranbin(arg2);
+    tranbin(opcode,arg2);
 
 }
 
 void itype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
+    bin += "0000000";
     if(!strcmp(opcode, "lw")) bin += "010";
     else if(!strcmp(opcode, "sw"))bin += "011";
     else bin += "100";
-    tranbin(arg0);
-    tranbin(arg1);
-    if(isNumber(arg2)) twoCom(arg2);
-    else symAdd.push(arg2);
+    tranbin(opcode,arg0);
+    tranbin(opcode,arg1);
+    cout << arg2 << endl;
+    if(isNumber(arg2)) twoCom(opcode,arg2);
+    else{
+        for(int i=0; i<addr; i++){
+            if(lb[i][0] == arg2){
+                sprintf(arg2, "%d", i);
+                twoCom(opcode,arg2);
+            }else;
+        }
+        // cout << "error: don't have " << arg2 << endl;
+        // exit(1);
+    }
 }
 
 void jtype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
+    bin += "0000000";
     bin += "101";
-    tranbin(arg0);
-    tranbin(arg1);
+    tranbin(opcode,arg0);
+    tranbin(opcode,arg1);
     bin += "0000000000000000";
 
 }
 
 void otype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
+    bin += "0000000";
     if(!strcmp(opcode, "halt")) bin += "110";
     else if(!strcmp(opcode, "noop"))bin += "111";
     bin += "0000000000000000000000";
@@ -203,8 +223,7 @@ void otype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
 
 
 
-
-void tranbin(char *num){
+void tranbin(char *opcode,char *num){
     int n;
     sscanf(num, "%d", &n);
     string bit{};
@@ -218,12 +237,11 @@ void tranbin(char *num){
         bit.insert( bit.begin( ), '0' );
     }
     bin += bit;
-    
 }
 
-void twoCom(char *arg2){
+void twoCom(char *opcode,char *num){
     int n;
-    sscanf(arg2, "%d", &n);
+    sscanf(num, "%d", &n);
     string bit{};
     if(n > 32767 || n < -32768){
         printf("error: offset field incorrect\n");
@@ -235,9 +253,8 @@ void twoCom(char *arg2){
                 else bit.insert( bit.begin( ), '1' );    
                 n >>= 1;
             }
-            while(bit.size() < 16){
-                bit.insert( bit.begin( ), '0' );
-            }
+            if(!strcmp(opcode, ".fill"))while(bit.size() < 32) bit.insert( bit.begin( ), '0' );
+            else while(bit.size() < 16) bit.insert( bit.begin( ), '0' );
         }else{
             int plus1;// do + 1 in 2's complement
             plus1=1;
@@ -256,9 +273,8 @@ void twoCom(char *arg2){
                 }
                 n >>= 1;
             }
-            while(bit.size() < 16){
-                bit.insert( bit.begin( ), '1' );
-            }
+            if(!strcmp(opcode, ".fill"))while(bit.size() < 32) bit.insert( bit.begin( ), '1' );
+            else while(bit.size() < 16) bit.insert( bit.begin( ), '1' );
         }
         bin += bit;
     }
