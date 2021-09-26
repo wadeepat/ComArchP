@@ -96,15 +96,17 @@ int main(int argc, char *argv[])
             bin.pop_back();
         }
         cout << "(address "<< loop << "): " << dec << "\t(binary: " << bi << ")\n";
+        fprintf(outFilePtr, "%d", dec);
+        fputs ("\n",outFilePtr);
         loop++;
     }
     
     //int d = 10;
-    //fprintf(outFilePtr, "%d", d);
+    
 
     // const char *c = bin.c_str();
     //fputs (c,outFilePtr);
-    //fputs ("\n",outFilePtr);
+    
     fclose (outFilePtr);
     return(0);
 }
@@ -191,7 +193,6 @@ void itype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
     else bin += "100";
     tranbin(opcode,arg0);
     tranbin(opcode,arg1);
-    cout << arg2 << endl;
     if(isNumber(arg2)) twoCom(opcode,arg2);
     else{
         for(int i=0; i<addr; i++){
