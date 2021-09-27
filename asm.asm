@@ -7,7 +7,7 @@
              lw          0           2            subAdr    prepare to call sub4n. $2=sub4n
              jalr         2            4                         call sub4n; $4=return address; $3=answer
              halt
-sub4n     sw          7            4            stack      save return address on stack
+sub4n    sw          7            4            stack      save return address on stack
              add        7            5           7            increment stack pointer
              sw          7            1            stack      save $1 on stack
              add        7            5           7            increment stack pointer

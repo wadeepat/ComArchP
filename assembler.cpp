@@ -7,6 +7,7 @@
 #include <queue>
 #include <math.h>
 #include <fstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -14,12 +15,12 @@ using namespace std;
 
 int readAndParse(FILE *, char *, char *, char *, char *, char *);
 int isNumber(char *);
-
+////////////////////////////// Funtion for each instcution type ///////////////////////////
 void rtype(char *, char *, char *, char *, char *);
 void itype(char *, char *, char *, char *, char *);
 void jtype(char *, char *, char *, char *, char *);
 void otype(char *, char *, char *, char *, char *);
-
+///////////////////////////// Additional functions //////////////////////////////////////
 void tranbin(char *, char *);
 void twoCom(char *, char *);
 int binTowcomdec();
@@ -32,10 +33,10 @@ int main(int argc, char *argv[])
     char *inFileString, *outFileString;
     
     FILE *inFilePtr, *outFilePtr;
-    char label[MAXLINELENGTH], opcode[MAXLINELENGTH], arg0[MAXLINELENGTH],
+    char    label[MAXLINELENGTH], opcode[MAXLINELENGTH], arg0[MAXLINELENGTH],
             arg1[MAXLINELENGTH], arg2[MAXLINELENGTH];
 
-    if (argc != 3) {
+    if (argc != 3) { // input argument must has 1.main file, 2.inputting assembly-code file, 3.outputting the machine-code file
         printf("error: usage: %s <assembly-code-file> <machine-code-file>\n",
             argv[0]);
         exit(1);
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     }  
 
     
-    
+    //get all label and its address
     string text;
     while(readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2) ) {
         text = label;
@@ -69,35 +70,51 @@ int main(int argc, char *argv[])
     
     /* after doing a readAndParse, you may want to do the following to test the
         opcode */
-        //check instruction and type
-     int dec;
+
+    //check instruction and type
+    int dec;
     while(readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2)){
         bin.empty();
         dec = 0;
-        if(!strcmp(opcode, "add")||!strcmp(opcode, "nand")) rtype(label, opcode, arg0, arg1, arg2); //add and nand
-        else if(!strcmp(opcode, "lw")||!strcmp(opcode, "sw")||!strcmp(opcode, "beq")) itype(label, opcode, arg0, arg1, arg2); //lw, sw and beq
-        else if(!strcmp(opcode, "jalr")) jtype(label, opcode, arg0, arg1, arg2);
-        else if(!strcmp(opcode, "halt")||!strcmp(opcode, "noop"))otype(label, opcode, arg0, arg1, arg2);
-        else if(!strcmp(opcode, ".fill")){
-            if(isNumber(arg0)) twoCom(opcode,arg0);
-            else{
-                for(int i=0; i<addr; i++){
+        if(!strcmp(opcode, "add")||!strcmp(opcode, "nand")){
+            rtype(label, opcode, arg0, arg1, arg2); //add and nand
+        }else if(!strcmp(opcode, "lw")||!strcmp(opcode, "sw")||!strcmp(opcode, "beq")){
+             itype(label, opcode, arg0, arg1, arg2); //lw, sw and beq
+        }else if(!strcmp(opcode, "jalr")) {
+            jtype(label, opcode, arg0, arg1, arg2);//jarl
+        }else if(!strcmp(opcode, "halt")||!strcmp(opcode, "noop")){
+            otype(label, opcode, arg0, arg1, arg2);//halt and noop
+        }else if(!strcmp(opcode, ".fill")){// if arg0 is number -> make 2's complement ,if Not send its address instead arg0
+            if(isNumber(arg0)){
+                twoCom(opcode,arg0);
+            }else{
+                for(int i=0; i<addr; i++){ 
                     if(lb[i][0] == arg0){
                         sprintf(arg0, "%d", i);
                         twoCom(opcode,arg0);
-                    }else;
+                    }
                 }
             }
         }
 
-        
+        // make  decimal of instructions
         string bi = bin;
-        int size = bi.size();
+        int size  = bi.size();
         if(bi.front() == '1'){
             int plus=1;
             for(int j=0; j < size; j++){
-                if(bin.back() == '1'){ if(plus==1){dec += pow(2,j); plus=0;}
-                }else{ if(plus==1){plus=1;} else dec += pow(2,j);}                
+                if(bin.back() == '1'){ 
+                    if(plus==1){
+                        dec += pow(2,j);
+                        plus=0;
+                    }
+                }else{ 
+                    if(plus==1){
+                        plus=1;
+                    }else {
+                        dec += pow(2,j);
+                    }
+                }                
                 bin.pop_back();
             }
             bin = '\0';
@@ -108,10 +125,10 @@ int main(int argc, char *argv[])
                 bin.pop_back();
             }
         }
-
-        cout << "(address "<< loop << "): " << dec << "\t\t(binary: " << bi << ")\n";
+        
+        cout << "(address "<< loop << "): " << setw(15) << dec << "\t\t(binary: " << bi << ")\n";//print address and binary of instruction
         fprintf(outFilePtr, "%d", dec);
-        fputs ("\n",outFilePtr);
+        fputs ("\n",outFilePtr);// write decimal machine code to outputting file
         loop++;
     }
     fclose (outFilePtr);
@@ -148,18 +165,32 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
     }
 
     /* is there a label? */
-    
+    char checkLabel[1];
     ptr = line;
     if (sscanf(ptr, "%[^\t\n ]", label)) {
 	/* successfully read label; advance pointer over the label */
-        //****************ยังไม่ได้เช็ค label ว่าเกิน 6 ตัว**************
-        if(!strcmp(label, "add")||!strcmp(label, "nand")); else if(!strcmp(label, "lw")||!strcmp(label, "sw")||!strcmp(label, "beq"))label[0] = '\0';
-        else if(!strcmp(label, "jalr")); else if(!strcmp(label, "halt")||!strcmp(label, "noop"))label[0] = '\0';
+        //check label don't start with number
+        checkLabel[0]=label[0];
+        if(isNumber(checkLabel)){
+            printf("error: label can't start with number!! \n");
+            printf("error At %s\n",label);
+	        exit(1);
+        }
+        //check label max size is 6 char
+        if((strlen(label)>6)){
+            printf("error: label max size is 6 char!! \n");
+            printf("error At %s there are %d char\n",label,strlen(label));
+	        exit(1);
+        }
+        //label specific case
+        if(!strcmp(label, "add")||!strcmp(label, "nand")); 
+        else if(!strcmp(label, "lw")||!strcmp(label, "sw")||!strcmp(label, "beq"))label[0] = '\0';
+        else if(!strcmp(label, "jalr")); 
+        else if(!strcmp(label, "halt")||!strcmp(label, "noop"))label[0] = '\0';
         else if(!strcmp(label, ".fill")){
             printf("error: can't use .fill in label\n");
 	        exit(1);
-        }
-        else {ptr += strlen(label);
+        }else {ptr += strlen(label);
 
 
         }
@@ -180,7 +211,7 @@ int isNumber(char *string)
     int i;
     return( (sscanf(string, "%d", &i)) == 1);
 }
-
+//////////////////////////////////////// R,I,J,O TYPE Function ///////////////////////////////////////
 void rtype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
     bin += "0000000";
     if(!strcmp(opcode, "add")) bin += "000";
@@ -233,8 +264,8 @@ void otype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
 }
 
 
-
-void tranbin(char *opcode,char *num){
+//////////////////////////////////// Additional Functions ///////////////////////////////////////////////
+void tranbin(char *opcode,char *num){//convert to binary
     int n;
     sscanf(num, "%d", &n);
     string bit;
@@ -249,7 +280,7 @@ void tranbin(char *opcode,char *num){
     bin += bit;
 }
 
-void twoCom(char *opcode,char *num){
+void twoCom(char *opcode,char *num){//making 2's complement
     int n;
     
     sscanf(num, "%d", &n);
