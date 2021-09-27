@@ -19,12 +19,11 @@ stack :
         ; com(n-1,r)
         sw 7 4 stack        ; push return address to stack
         add 7 5 7           ; down
-        ;add 1 neg1 1        ; n--
         sw 7 1 stack        ; push n to stack
         add 7 5 7
         sw 7 2 stack        ; push r to stack
         add 7 5 7
-        jalr nCrAdd 4       ; go to nCr , reg4 = pc+1 
+        jalr 6 4            ; go to nCr , reg4 = pc+1 
         lw 0 6 neg1         ; reg6 = -1
         add 7 6 7           ; up stack aka pop 
         lw 7 2 stack        ; pop
@@ -37,12 +36,12 @@ stack :
         add 2 6 2           ; r--
         sw 7 4 stack        ; push return address to stack
         add 7 5 7           ; down
-        ;add 1 neg1 1        ; n--
         sw 7 1 stack        ; push n to stack
         add 7 5 7
         sw 7 2 stack        ; push r to stack
         add 7 5 7
-        jalr nCrAdd 4       ; go to nCr , reg4 = pc+1 
+        lw 0 6 nCrAdr	    ; reg6 = nCrAdr
+        jalr 6 4            ; go to nCr , reg4 = pc+1 
         lw 0 6 neg1         ; reg6 = -1
         add 7 6 7           ; up
         lw 7 2 stack        ; pop
