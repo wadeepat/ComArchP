@@ -63,6 +63,19 @@ int main(int argc, char *argv[])
         lb[addr][0] = text;
         addr ++;
     }
+    // check duplicate label
+    for(int i=0 ; i<=addr ;i++){
+        if((lb[i][0].size())!=0){
+            for(int j=i+1; j<=addr ;j++){
+                if(lb[i][0]==lb[j][0]){
+                    cout<<"Label "<< lb[j][0]<<" is Duplicate !!"<<endl;
+                    exit(1);
+                }
+            }
+        }
+        
+    }
+
 
     /* this is how to rewind the file ptr so that you start reading from the
         beginning of the file */
@@ -182,7 +195,8 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
             printf("error At %s there are %d char\n",label,strlen(label));
 	        exit(1);
         }
-        //label specific case
+        
+        //check label that is not opcode
         if(!strcmp(label, "add")||!strcmp(label, "nand")); 
         else if(!strcmp(label, "lw")||!strcmp(label, "sw")||!strcmp(label, "beq"))label[0] = '\0';
         else if(!strcmp(label, "jalr")); 
@@ -190,10 +204,11 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
         else if(!strcmp(label, ".fill")){
             printf("error: can't use .fill in label\n");
 	        exit(1);
-        }else {ptr += strlen(label);
-
-
+        }else {
+            ptr += strlen(label);
         }
+        
+        
     }
     /*
      * Parse the rest of the line.  Would be nice to have real regular
@@ -201,6 +216,19 @@ int readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
      */
     sscanf(ptr, "%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]%*[\t\n ]%[^\t\n ]",
     opcode, arg0, arg1, arg2);
+
+        // Only defined opcode (lw,add,nand,sw,beq,jalr,halt,noop,.fill) can use
+        if(!strcmp(opcode, "lw")||!strcmp(opcode, "add")||!strcmp(opcode, "nand")){
+            //do nothing
+        }else if(!strcmp(opcode, "sw")||!strcmp(opcode, "beq")||!strcmp(opcode, "jalr")){
+            //do nothing
+        }else if(!strcmp(opcode, "halt")||!strcmp(opcode, "noop")||!strcmp(opcode, ".fill")){
+            //do nothing
+        }else{
+            printf("opcode %s is invalid\n",opcode);
+            exit(1);
+        }
+
     return(1);
     
 }
