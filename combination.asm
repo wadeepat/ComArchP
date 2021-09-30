@@ -1,13 +1,14 @@
     lw 0 5 pos1
     lw 0 1 n                
-    lw 0 2 r                
-    lw 0 3 0                
+    lw 0 2 r                               
     lw 0 6 nCrAdr
-    jalr 6 4                
+    jalr 6 4         
+    halt       
 nCr beq 2 0 ans1Ad
     beq 2 1 ans1Ad
-    beq 2 pos1 ans2Ad
-    add 1 neg1 1     
+    beq 2 5 ans2Ad
+    lw 0 6 neg1
+    add 1 6 1     
     beq 2 1 ans3Ad
     sw 7 4 stack   
     add 7 5 7      
@@ -53,6 +54,6 @@ nCrAdr .fill nCr
 ans1Ad .fill ans1
 ans2Ad .fill ans2
 ans3Ad .fill ans3
-n .fill 5
-r .fill 2
+n .fill 2
+r .fill 1
 stack .fill 0
