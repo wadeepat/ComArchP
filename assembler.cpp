@@ -258,12 +258,20 @@ void itype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
     else bin += "100";
     tranbin(opcode,arg0);
     tranbin(opcode,arg1);
-    if(isNumber(arg2)) twoCom(opcode,arg2);
-    else{
+    if(isNumber(arg2)) twoCom(opcode,arg2);//numeric
+    else{//symbolic
         for(int i=0; i<addr; i++){
             if(lb[i][0] == arg2){
                 int n = i;
-                if(loop > n) n = n-loop-1;   
+                if(!strcmp(opcode, "beq")){
+                    if(loop==0);    
+                    else if(loop>n){//go up
+                        n = n-loop-1;
+                    }else{
+                        n = n-loop-1;        
+                    }
+                }
+                
                 sprintf(arg2, "%d", n);
                 twoCom(opcode,arg2);
             }

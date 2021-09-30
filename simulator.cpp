@@ -52,6 +52,7 @@ int main(int argc, char *argv[]){
         }
         printf("memory[%d]=%d\n", state.numMemory, state.mem[state.numMemory]);
     }
+    state.numMemory+=5;
     bool running= true;
     
     int count = 0;//count how many instruction we have been run 
@@ -74,10 +75,16 @@ int main(int argc, char *argv[]){
         }else{//i
             iType(&state,instruc);
         }
-        
+        // if(count==20){
+        //     cout<<"pause"<<endl;
+        //     break;
+
+        // }
+        //cout<<"numem "<<state.numMemory<<endl;    
     }
     
     printState(&state);
+    
     return(0);
 }
 
@@ -103,7 +110,10 @@ void printState(stateType *statePtr){
 int convertNum(int num){
     /* convert a 16-bit number into a 32-bit integer */
     if (num & (1<<15) ) {
+        cout<<num<<endl;
         num -= (1<<16);
+        cout<<num<<endl;
+        
     }
     return(num);
 }
@@ -164,19 +174,22 @@ void iType(stateType *statePtr,char* instruc){
     int rb = bitoDec3bit(instruc[18],instruc[17],instruc[16]);
     int imm = convertNum(bitoDec16bit(instruc)); 
     
-    
+    cout<<statePtr->reg[ra]<<" "<<statePtr->reg[rb]<<" offset "<<imm<<endl;
     if(instruc[24]== '0'){
         if(instruc[22]=='0'){//lw
-            statePtr->reg[rb] = statePtr->mem[statePtr->reg[ra] + imm]; 
+            statePtr->reg[rb] = statePtr->mem[statePtr->reg[ra] + imm]; cout<<statePtr->reg[ra] + imm<<endl;
             statePtr->pc++;
         }else{//sw
             //mem[offsetField+reg[a]] = reg[b]
-            statePtr->mem[statePtr->reg[ra]+imm] = statePtr->reg[rb]; 
+            statePtr->mem[statePtr->reg[ra]+imm] = statePtr->reg[rb]; cout<<statePtr->reg[ra]+imm<<endl;
+            statePtr->pc++;
         }
     }else{//beq
+        
         if(statePtr->reg[ra]==statePtr->reg[rb])statePtr->pc += 1+imm;//pc = pc+1+offsetField
         else statePtr->pc++;
     }
+
     
 }
 
