@@ -59,6 +59,7 @@ int main(int argc, char *argv[]){
     char* temp;
     while(running){
         count++;
+        cout<<"count "<<count<<endl;
         printState(&state);
     
         char *instruc = dectoBi(state.mem[state.pc],temp);
@@ -75,7 +76,7 @@ int main(int argc, char *argv[]){
         }else{//i
             iType(&state,instruc);
         }
-        // if(count==20){
+        // if(count==5){
         //     cout<<"pause"<<endl;
         //     break;
 
@@ -94,9 +95,9 @@ void printState(stateType *statePtr){
     printf("\tpc %d\n", statePtr->pc);
     printf("\tmemory:\n");
 
-	for (i=0; i<statePtr->numMemory; i++) {
-	    printf("\t\tmem[ %d ] %d\n", i, statePtr->mem[i]);
-	}
+	// for (i=0; i<statePtr->numMemory; i++) {
+	//     printf("\t\tmem[ %d ] %d\n", i, statePtr->mem[i]);
+	// }
 
     printf("\tregisters:\n");
 
@@ -123,7 +124,7 @@ char* dectoBi(int dec,char *temp){
     
     while(i!=32){
         if(dec!=0) {
-            if(dec%2==0)temp[i]='0';
+            if(dec%2==0)temp[i]='0'; 
             else temp[i]='1'; 
             dec= dec/2;   
         }else temp[i]='0';
@@ -149,22 +150,33 @@ int bitoDec16bit(char* bi){
 }
 
 void rType(stateType *statePtr,char* instruc){
-    
+    int regA = bitoDec3bit(instruc[21],instruc[20],instruc[19]);//dec id
+    int regB = bitoDec3bit(instruc[18],instruc[17],instruc[16]);//dec id
     int rd = bitoDec3bit(instruc[2],instruc[1],instruc[0]);
 
     if(instruc[22]=='0'){//add
-        int regA = bitoDec3bit(instruc[21],instruc[20],instruc[19]);
-        int regB = bitoDec3bit(instruc[18],instruc[17],instruc[16]);
+        
         statePtr->reg[rd] = statePtr->reg[regA]+statePtr->reg[regB];
     }else{//nand
-        char a,b,c;
-        if(instruc[21]&&instruc[18])a='0';
-        else a='1';
-        if(instruc[20]&&instruc[17])b='0';
-        else b='1';
-        if(instruc[19]&&instruc[16])c='0';
-        else c='1';
-        statePtr->reg[rd] = bitoDec3bit(a,b,c);
+       
+        char temp[16];
+        int a = statePtr->reg[regA]; 
+        int b = statePtr->reg[regB];    
+        int num = max(a,b);
+        int i = 0;
+        while(num>pow(2,i))i++; 
+        i--;
+        //cout<<"i = "<<num<<" "<<i<<endl;
+        
+    for(int j=0;j<=i;j++){
+        if(a%2 == 1 && b%2 == 1)temp[j]='0'; // 00000001
+        else temp[j]='1';                    // 00000011
+        a=a/2;
+        b=b/2;
+    }
+    cout<<"after"<<endl;
+    statePtr->reg[rd] = bitoDec16bit(temp);
+    //cout<<"nand "<<bitoDec16bit(temp)<<endl;
     }
     statePtr->pc++;
 }
