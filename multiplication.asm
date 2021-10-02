@@ -1,4 +1,4 @@
-lw 0 1 zero				        ;$1=0 stores the product
+        lw 0 1 zero				;$1=0 stores the product
 	lw 0 2 mcand				;$2=mcand(binary)
 	lw 0 3 mplier				;$3=mplier(binary)
 	lw 0 4 one                              ;$4=1 the power of 2 (start at 0001)
