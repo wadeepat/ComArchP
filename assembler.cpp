@@ -265,13 +265,8 @@ void itype(char *label, char *opcode, char *arg0, char *arg1, char *arg2){
                 int n = i;
                 if(!strcmp(opcode, "beq")){
                     if(loop==0);    
-                    else if(loop>n){//go up
-                        n = n-loop-1;
-                    }else{
-                        n = n-loop-1;        
-                    }
+                    else n = n-loop-1;
                 }
-                
                 sprintf(arg2, "%d", n);
                 twoCom(opcode,arg2);
             }
