@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
         }else{//i
             iType(&state,instruc);
         }
-        // if(count==5){
+        // if(count==10){
         //     cout<<"pause"<<endl;
         //     break;
 
