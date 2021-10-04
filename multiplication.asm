@@ -1,8 +1,8 @@
-lw 0 1 zero				
+	lw 0 1 zero				
 	lw 0 2 mcand				
 	lw 0 3 mplier				
 	lw 0 4 one 				
-multi 	beq 7 3 finished			
+multi 	beq 7 3 finish			
 	nand 3 4 6			
 	nand 6 6 6			
 	add 6 7 7			
