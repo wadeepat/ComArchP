@@ -59,7 +59,6 @@ int main(int argc, char *argv[]){
     char* temp;
     while(running){
         count++;
-        cout<<"count "<<count<<endl;
         printState(&state);
         char *instruc = dectoBi(state.mem[state.pc],temp);
         if(instruc[24]=='0' && instruc[23]=='0'){//r
@@ -75,12 +74,6 @@ int main(int argc, char *argv[]){
         }else{//i
             iType(&state,instruc);
         }
-        // if(count==20){
-        //     cout<<"pause"<<endl;
-        //     break;
-
-        // }
-        // cout<<"numem "<<state.numMemory<<endl;  
     }
     
     printState(&state);
@@ -94,9 +87,9 @@ void printState(stateType *statePtr){
     printf("\tpc %d\n", statePtr->pc);
     printf("\tmemory:\n");
 
-	// for (i=0; i<statePtr->numMemory; i++) {
-	//     printf("\t\tmem[ %d ] %d\n", i, statePtr->mem[i]);
-	// }
+	for (i=0; i<statePtr->numMemory; i++) {
+	    printf("\t\tmem[ %d ] %d\n", i, statePtr->mem[i]);
+	}
 
     printf("\tregisters:\n");
 
@@ -110,10 +103,7 @@ void printState(stateType *statePtr){
 int convertNum(int num){
     /* convert a 16-bit number into a 32-bit integer */
     if (num & (1<<15) ) {
-        cout<<num<<endl;
         num -= (1<<16);
-        cout<<num<<endl;
-        
     }
     return(num);
 }
@@ -159,23 +149,17 @@ void rType(stateType *statePtr,char* instruc){
     }else{//nand
        
         char temp[16];
-        int a = statePtr->reg[regA]; cout<<a<<endl;
-        int b = statePtr->reg[regB]; cout<<b<<endl;
-        // int num = max(a,b);
-        // int i = 14;
-        // while(num<pow(2,i))i--; 
-        //cout<<"i = "<<num<<" "<<i<<endl;
+        int a = statePtr->reg[regA]; 
+        int b = statePtr->reg[regB]; 
         
         for(int j=0;j<=14;j++){
-            if(a%2 == 1 && b%2 == 1)temp[j]='0'; // 00000001
-            else temp[j]='1';                    // 00000011
+            if(a%2 == 1 && b%2 == 1)temp[j]='0'; 
+            else temp[j]='1';                    
             a=a/2;
             b=b/2;
         }
    
         statePtr->reg[rd] = bitoDec16bit(temp);
-    
-        cout<<"nand "<<bitoDec16bit(temp)<<endl;
     }
     statePtr->pc++;
 }
@@ -185,14 +169,13 @@ void iType(stateType *statePtr,char* instruc){
     int rb = bitoDec3bit(instruc[18],instruc[17],instruc[16]);
     int imm = convertNum(bitoDec16bit(instruc)); 
     
-    cout<<statePtr->reg[ra]<<" "<<statePtr->reg[rb]<<" offset "<<imm<<endl;
     if(instruc[24]== '0'){
         if(instruc[22]=='0'){//lw
-            statePtr->reg[rb] = statePtr->mem[statePtr->reg[ra] + imm]; cout<<statePtr->reg[ra] + imm<<endl;
+            statePtr->reg[rb] = statePtr->mem[statePtr->reg[ra] + imm]; 
             statePtr->pc++;
         }else{//sw
             //mem[offsetField+reg[a]] = reg[b]
-            statePtr->mem[statePtr->reg[ra]+imm] = statePtr->reg[rb]; cout<<statePtr->reg[ra]+imm<<endl;
+            statePtr->mem[statePtr->reg[ra]+imm] = statePtr->reg[rb]; 
             statePtr->pc++;
         }
     }else{//beq
