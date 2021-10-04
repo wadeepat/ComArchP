@@ -61,7 +61,6 @@ int main(int argc, char *argv[]){
         count++;
         cout<<"count "<<count<<endl;
         printState(&state);
-    
         char *instruc = dectoBi(state.mem[state.pc],temp);
         if(instruc[24]=='0' && instruc[23]=='0'){//r
             rType(&state,instruc);
@@ -76,12 +75,12 @@ int main(int argc, char *argv[]){
         }else{//i
             iType(&state,instruc);
         }
-        // if(count==10){
+        // if(count==20){
         //     cout<<"pause"<<endl;
         //     break;
 
         // }
-        //cout<<"numem "<<state.numMemory<<endl;    
+        // cout<<"numem "<<state.numMemory<<endl;  
     }
     
     printState(&state);
@@ -160,23 +159,23 @@ void rType(stateType *statePtr,char* instruc){
     }else{//nand
        
         char temp[16];
-        int a = statePtr->reg[regA]; 
-        int b = statePtr->reg[regB];    
-        int num = max(a,b);
-        int i = 0;
-        while(num>pow(2,i))i++; 
-        i--;
+        int a = statePtr->reg[regA]; cout<<a<<endl;
+        int b = statePtr->reg[regB]; cout<<b<<endl;
+        // int num = max(a,b);
+        // int i = 14;
+        // while(num<pow(2,i))i--; 
         //cout<<"i = "<<num<<" "<<i<<endl;
         
-    for(int j=0;j<=i;j++){
-        if(a%2 == 1 && b%2 == 1)temp[j]='0'; // 00000001
-        else temp[j]='1';                    // 00000011
-        a=a/2;
-        b=b/2;
-    }
-    cout<<"after"<<endl;
-    statePtr->reg[rd] = bitoDec16bit(temp);
-    //cout<<"nand "<<bitoDec16bit(temp)<<endl;
+        for(int j=0;j<=14;j++){
+            if(a%2 == 1 && b%2 == 1)temp[j]='0'; // 00000001
+            else temp[j]='1';                    // 00000011
+            a=a/2;
+            b=b/2;
+        }
+   
+        statePtr->reg[rd] = bitoDec16bit(temp);
+    
+        cout<<"nand "<<bitoDec16bit(temp)<<endl;
     }
     statePtr->pc++;
 }
